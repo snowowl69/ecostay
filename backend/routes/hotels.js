@@ -157,7 +157,7 @@ router.delete('/:id', protect, authorize('owner', 'admin'), async (req, res) => 
   }
 });
 
-router.post('/:id/reviews', protect, authorize('customer'), [
+router.post('/:id/reviews', protect, [
   body('rating').isInt({ min: 1, max: 5 }).withMessage('Rating must be between 1 and 5'),
   body('comment').optional().trim().isLength({ max: 500 })
 ], async (req, res) => {

@@ -404,7 +404,7 @@ const HotelDetail = () => {
                 </div>
               )}
 
-              {user && (
+              {user ? (
                 <form onSubmit={handleReviewSubmit} className="review-form">
                   <h4>Write a Review</h4>
                   <div className="review-rating-select">
@@ -427,6 +427,13 @@ const HotelDetail = () => {
                     {submittingReview ? 'Posting...' : 'Post Review'}
                   </button>
                 </form>
+              ) : (
+                <div className="review-login-prompt" style={{ background: 'var(--glass-bg)', borderRadius: 'var(--radius-md)', padding: '24px', textAlign: 'center', marginBottom: '20px', border: '1px dashed var(--slate-300)' }}>
+                  <Star size={28} style={{ color: 'var(--amber-400)', marginBottom: '8px' }} />
+                  <p style={{ fontWeight: 600, marginBottom: '4px' }}>Want to share your experience?</p>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '12px' }}>Log in to write a review for this hotel.</p>
+                  <button className="btn btn-primary" onClick={() => navigate('/login')}>Login to Review</button>
+                </div>
               )}
 
               <div className="reviews-list">
