@@ -48,8 +48,8 @@ const CustomerDashboard = () => {
   };
 
   const now = new Date();
-  const upcoming = bookings.filter(b => new Date(b.checkInDate) >= now && b.status !== 'cancelled');
-  const past = bookings.filter(b => new Date(b.checkOutDate) < now || b.status === 'checked-out');
+  const upcoming = bookings.filter(b => new Date(b.checkIn) >= now && b.status !== 'cancelled');
+  const past = bookings.filter(b => new Date(b.checkOut) < now || b.status === 'checked-out');
   const cancelled = bookings.filter(b => b.status === 'cancelled');
   const totalSpent = bookings.filter(b => b.status !== 'cancelled').reduce((s, b) => s + (b.totalPrice || 0), 0);
   const carbonSaved = bookings.filter(b => b.status !== 'cancelled').reduce((s, b) => s + (b.carbonOffset?.amount || 0), 0);

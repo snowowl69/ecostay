@@ -321,8 +321,8 @@ const OwnerDashboard = () => {
                                   <td><code>{b.ticketNumber}</code></td>
                                   <td>{b.user?.name || '—'}</td>
                                   <td>{b.room?.name || '—'}</td>
-                                  <td>{new Date(b.checkInDate).toLocaleDateString()}</td>
-                                  <td>{new Date(b.checkOutDate).toLocaleDateString()}</td>
+                                  <td>{new Date(b.checkIn).toLocaleDateString()}</td>
+                                  <td>{new Date(b.checkOut).toLocaleDateString()}</td>
                                   <td><strong>₹{b.totalPrice?.toLocaleString('en-IN')}</strong></td>
                                   <td><span className={`status-badge status-${b.status}`}>{b.status}</span></td>
                                 </tr>

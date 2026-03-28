@@ -20,7 +20,7 @@ const BookingConfirmation = () => {
   const loadBooking = async () => {
     try {
       const { data } = await bookingsAPI.getById(id);
-      setBooking(data.booking);
+      setBooking(data);
     } catch (err) {
       console.error(err);
     } finally {
@@ -39,7 +39,7 @@ const BookingConfirmation = () => {
     </div>
   );
 
-  const nights = Math.ceil((new Date(booking.checkOutDate) - new Date(booking.checkInDate)) / (1000 * 60 * 60 * 24));
+  const nights = Math.ceil((new Date(booking.checkOut) - new Date(booking.checkIn)) / (1000 * 60 * 60 * 24));
 
   return (
     <div className="booking-confirmation-page">
@@ -119,7 +119,7 @@ const BookingConfirmation = () => {
               <div className="detail-icon"><Calendar size={18} /></div>
               <div>
                 <span className="detail-label">Check-in</span>
-                <span className="detail-value">{new Date(booking.checkInDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                <span className="detail-value">{new Date(booking.checkIn).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
               </div>
             </div>
 
@@ -127,7 +127,7 @@ const BookingConfirmation = () => {
               <div className="detail-icon"><Calendar size={18} /></div>
               <div>
                 <span className="detail-label">Check-out</span>
-                <span className="detail-value">{new Date(booking.checkOutDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                <span className="detail-value">{new Date(booking.checkOut).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
               </div>
             </div>
 
