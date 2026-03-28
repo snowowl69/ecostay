@@ -52,7 +52,8 @@
   --primary-light: var(--emerald-300);
   --secondary: var(--teal-500);
   --accent: var(--amber-500);
-  --bg-primary: #fafffe;
+  --bg-primary: #f5faf2;
+  --bg-card: #faf9f5;
   --bg-dark: var(--slate-900);
   --bg-darker: var(--slate-950);
   --text-primary: var(--slate-800);
