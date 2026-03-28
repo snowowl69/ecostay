@@ -7,7 +7,6 @@ const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Create booking (customer only)
 router.post('/', protect, authorize('customer'), [
   body('hotel').notEmpty(),
   body('room').notEmpty(),
@@ -23,7 +22,6 @@ router.post('/', protect, authorize('customer'), [
 
     const { hotel: hotelId, room: roomId, checkIn, checkOut, guests, unitsBooked = 1, specialRequests, paymentMethod } = req.body;
 
-    // Validate dates
     const checkInDate = new Date(checkIn);
     const checkOutDate = new Date(checkOut);
     if (checkInDate >= checkOutDate) {
@@ -33,7 +31,6 @@ router.post('/', protect, authorize('customer'), [
       return res.status(400).json({ message: 'Check-in date cannot be in the past' });
     }
 
-    // Check room availability
     const room = await Room.findById(roomId);
     if (!room) {
       return res.status(404).json({ message: 'Room not found' });
@@ -44,11 +41,9 @@ router.post('/', protect, authorize('customer'), [
       return res.status(400).json({ message: 'Room is not available for selected dates' });
     }
 
-    // Calculate price
     const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
     const totalPrice = room.price.base * nights * unitsBooked;
 
-    // Create booking
     const booking = await Booking.create({
       user: req.user._id,
       hotel: hotelId,
@@ -65,7 +60,6 @@ router.post('/', protect, authorize('customer'), [
       paymentStatus: 'paid'
     });
 
-    // Update room booked dates
     room.bookedDates.push({
       startDate: checkInDate,
       endDate: checkOutDate,
@@ -85,7 +79,6 @@ router.post('/', protect, authorize('customer'), [
   }
 });
 
-// Get user bookings (customer)
 router.get('/my-bookings', protect, async (req, res) => {
   try {
     const { status, page = 1, limit = 10 } = req.query;
@@ -116,7 +109,6 @@ router.get('/my-bookings', protect, async (req, res) => {
   }
 });
 
-// Get hotel bookings (owner)
 router.get('/hotel/:hotelId', protect, authorize('owner', 'admin'), async (req, res) => {
   try {
     const hotel = await Hotel.findById(req.params.hotelId);
@@ -156,7 +148,6 @@ router.get('/hotel/:hotelId', protect, authorize('owner', 'admin'), async (req, 
   }
 });
 
-// Get single booking
 router.get('/:id', protect, async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id)
@@ -168,7 +159,6 @@ router.get('/:id', protect, async (req, res) => {
       return res.status(404).json({ message: 'Booking not found' });
     }
 
-    // Authorization check
     if (
       booking.user._id.toString() !== req.user._id.toString() &&
       req.user.role !== 'admin'
@@ -185,7 +175,6 @@ router.get('/:id', protect, async (req, res) => {
   }
 });
 
-// Update booking status (owner/admin)
 router.put('/:id/status', protect, authorize('owner', 'admin'), async (req, res) => {
   try {
     const { status } = req.body;
@@ -198,7 +187,6 @@ router.put('/:id/status', protect, authorize('owner', 'admin'), async (req, res)
     booking.status = status;
     if (status === 'cancelled' || status === 'refunded') {
       booking.paymentStatus = status === 'refunded' ? 'refunded' : booking.paymentStatus;
-      // Remove from booked dates
       const room = await Room.findById(booking.room);
       if (room) {
         room.bookedDates = room.bookedDates.filter(
@@ -221,7 +209,6 @@ router.put('/:id/status', protect, authorize('owner', 'admin'), async (req, res)
   }
 });
 
-// Cancel booking (customer)
 router.put('/:id/cancel', protect, async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
@@ -241,7 +228,6 @@ router.put('/:id/cancel', protect, async (req, res) => {
     booking.status = 'cancelled';
     booking.paymentStatus = 'refunded';
 
-    // Remove from booked dates
     const room = await Room.findById(booking.room);
     if (room) {
       room.bookedDates = room.bookedDates.filter(
@@ -258,7 +244,6 @@ router.put('/:id/cancel', protect, async (req, res) => {
   }
 });
 
-// Get booking by ticket number
 router.get('/ticket/:ticketNumber', protect, async (req, res) => {
   try {
     const booking = await Booking.findOne({ ticketNumber: req.params.ticketNumber })

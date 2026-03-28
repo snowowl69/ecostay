@@ -166,7 +166,6 @@ const HotelDetail = () => {
 
   return (
     <div className="hotel-detail-page">
-      {/* Hero Gallery */}
       <div className="hotel-detail-hero">
         <div className="hotel-gallery">
           <motion.img
@@ -210,7 +209,6 @@ const HotelDetail = () => {
         </div>
       </div>
 
-      {/* Quick Info Bar */}
       <div className="hotel-quick-info-bar">
         <div className="container">
           <div className="quick-info-inner">
@@ -244,17 +242,14 @@ const HotelDetail = () => {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="container">
         <div className="hotel-detail-content">
           <div className="hotel-detail-main">
 
-            {/* Overview */}
             <motion.section className="hotel-section" variants={fadeUp} initial="hidden" animate="visible" transition={{ duration: 0.5 }}>
               <h2 className="section-heading"><Sparkles size={22} /> About This Hotel</h2>
               <p className="hotel-description-full">{hotel.description}</p>
 
-              {/* Highlights */}
               <div className="hotel-highlights-grid">
                 <div className="highlight-card">
                   <Star size={20} />
@@ -274,7 +269,6 @@ const HotelDetail = () => {
                 </div>
               </div>
 
-              {/* Policies */}
               <div className="hotel-policies">
                 <h3>Hotel Policies</h3>
                 <div className="policies-grid">
@@ -297,7 +291,6 @@ const HotelDetail = () => {
                 </div>
               </div>
 
-              {/* Contact */}
               <div className="hotel-contact-info">
                 <h3>Contact</h3>
                 <div className="contact-row">
@@ -316,7 +309,6 @@ const HotelDetail = () => {
               </div>
             </motion.section>
 
-            {/* Amenities & Facilities */}
             <motion.section className="hotel-section" variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }}>
               <h2 className="section-heading"><Check size={22} /> Amenities & Facilities</h2>
               {hotel.amenities?.length > 0 ? (
@@ -334,7 +326,6 @@ const HotelDetail = () => {
                 <p style={{ color: 'var(--color-text-muted)' }}>No amenities listed.</p>
               )}
 
-              {/* Sustainability */}
               {sustainabilityFeatures.length > 0 && (
                 <div className="sustainability-section">
                   <h3><Leaf size={18} /> Sustainability Practices</h3>
@@ -358,7 +349,6 @@ const HotelDetail = () => {
               )}
             </motion.section>
 
-            {/* Available Rooms */}
             <motion.section className="hotel-section" variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }}>
               <h2 className="section-heading"><Award size={22} /> Available Rooms</h2>
               {rooms.length === 0 ? (
@@ -374,11 +364,9 @@ const HotelDetail = () => {
               )}
             </motion.section>
 
-            {/* Reviews */}
             <motion.section className="hotel-section" variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.3 }}>
               <h2 className="section-heading"><ThumbsUp size={22} /> Guest Reviews</h2>
 
-              {/* Rating Overview */}
               <div className="review-overview">
                 <div className="review-overview-score">
                   <div className="big-score">{avgRating > 0 ? avgRating.toFixed(1) : '—'}</div>
@@ -408,7 +396,6 @@ const HotelDetail = () => {
                 </div>
               </div>
 
-              {/* Filter indicator */}
               {filterRating > 0 && (
                 <div className="review-filter-active">
                   <Filter size={14} />
@@ -417,7 +404,6 @@ const HotelDetail = () => {
                 </div>
               )}
 
-              {/* Write Review */}
               {user && (
                 <form onSubmit={handleReviewSubmit} className="review-form">
                   <h4>Write a Review</h4>
@@ -443,7 +429,6 @@ const HotelDetail = () => {
                 </form>
               )}
 
-              {/* Reviews List */}
               <div className="reviews-list">
                 {filteredReviews.length === 0 ? (
                   <div className="empty-reviews">
@@ -480,7 +465,6 @@ const HotelDetail = () => {
             </motion.section>
           </div>
 
-          {/* Sidebar */}
           <div className="hotel-detail-sidebar">
             <motion.div className="booking-widget" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
               <div className="booking-widget-header">
@@ -532,7 +516,6 @@ const HotelDetail = () => {
         </div>
       </div>
 
-      {/* Booking Modal */}
       <AnimatePresence>
         {showBooking && selectedRoom && (
           <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowBooking(false)}>

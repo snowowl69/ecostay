@@ -50,7 +50,6 @@ const BookingConfirmation = () => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
         >
-          {/* Success Header */}
           <div className="confirmation-header">
             <motion.div
               initial={{ scale: 0 }}
@@ -76,7 +75,6 @@ const BookingConfirmation = () => {
             </motion.p>
           </div>
 
-          {/* Ticket Number */}
           <motion.div
             className="ticket-display"
             initial={{ opacity: 0, y: 20 }}
@@ -90,7 +88,6 @@ const BookingConfirmation = () => {
             </div>
           </motion.div>
 
-          {/* Booking Details */}
           <motion.div
             className="confirmation-details"
             initial={{ opacity: 0, y: 20 }}
@@ -166,7 +163,6 @@ const BookingConfirmation = () => {
             </div>
           </motion.div>
 
-          {/* Eco Impact */}
           {booking.carbonOffset > 0 && (
             <motion.div
               className="eco-impact-card"
@@ -182,7 +178,6 @@ const BookingConfirmation = () => {
             </motion.div>
           )}
 
-          {/* Actions */}
           <motion.div
             className="confirmation-actions"
             initial={{ opacity: 0 }}

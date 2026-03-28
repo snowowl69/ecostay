@@ -6,7 +6,6 @@ const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Get rooms for a hotel (public)
 router.get('/hotel/:hotelId', async (req, res) => {
   try {
     const { checkIn, checkOut } = req.query;
@@ -31,7 +30,6 @@ router.get('/hotel/:hotelId', async (req, res) => {
   }
 });
 
-// Get single room
 router.get('/:id', async (req, res) => {
   try {
     const room = await Room.findById(req.params.id).populate('hotel');
@@ -44,7 +42,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Create room (owner only)
 router.post('/', protect, authorize('owner', 'admin'), [
   body('hotel').notEmpty().withMessage('Hotel ID is required'),
   body('name').trim().notEmpty().withMessage('Room name is required'),
@@ -78,7 +75,6 @@ router.post('/', protect, authorize('owner', 'admin'), [
   }
 });
 
-// Update room (owner only)
 router.put('/:id', protect, authorize('owner', 'admin'), async (req, res) => {
   try {
     const room = await Room.findById(req.params.id);
@@ -102,7 +98,6 @@ router.put('/:id', protect, authorize('owner', 'admin'), async (req, res) => {
   }
 });
 
-// Delete room (owner only)
 router.delete('/:id', protect, authorize('owner', 'admin'), async (req, res) => {
   try {
     const room = await Room.findById(req.params.id);
@@ -127,7 +122,6 @@ router.delete('/:id', protect, authorize('owner', 'admin'), async (req, res) => 
   }
 });
 
-// Check availability
 router.post('/check-availability', async (req, res) => {
   try {
     const { roomId, checkIn, checkOut, units = 1 } = req.body;

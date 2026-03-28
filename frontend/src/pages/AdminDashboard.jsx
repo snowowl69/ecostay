@@ -90,7 +90,6 @@ const AdminDashboard = () => {
           )}
         </motion.div>
 
-        {/* Stats */}
         <div className="dashboard-stats">
           <motion.div className="stat-card" variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.05 }}>
             <div className="stat-icon" style={{ background: 'var(--gradient-primary)' }}><Hotel size={24} /></div>
@@ -110,7 +109,6 @@ const AdminDashboard = () => {
           </motion.div>
         </div>
 
-        {/* Search bar */}
         <div className="admin-search-wrapper">
           <div className="admin-search-box">
             <Search size={18} className="admin-search-icon" />
@@ -119,7 +117,6 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Tabs */}
         <div className="dashboard-tabs">
           <button className={`dashboard-tab ${activeTab === 'overview' ? 'active' : ''}`} onClick={() => setActiveTab('overview')}>Overview</button>
           <button className={`dashboard-tab ${activeTab === 'hotels' ? 'active' : ''}`} onClick={() => setActiveTab('hotels')}>Hotels ({hotels.length})</button>
@@ -128,11 +125,9 @@ const AdminDashboard = () => {
         </div>
 
         <AnimatePresence mode="wait">
-          {/* Overview */}
           {activeTab === 'overview' && (
             <motion.div key="overview" initial="hidden" animate="visible" exit="hidden" variants={fadeUp}>
               <div className="admin-overview-grid">
-                {/* Recent Bookings */}
                 <div className="admin-card">
                   <div className="admin-card-header">
                     <Calendar size={18} />
@@ -154,7 +149,6 @@ const AdminDashboard = () => {
                   </div>
                 </div>
 
-                {/* Pending Verification */}
                 <div className="admin-card">
                   <div className="admin-card-header">
                     <Shield size={18} />
@@ -178,7 +172,6 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              {/* Revenue by Booking Status */}
               <div className="admin-card admin-revenue-card">
                 <div className="admin-card-header">
                   <TrendingUp size={18} />
@@ -203,7 +196,6 @@ const AdminDashboard = () => {
             </motion.div>
           )}
 
-          {/* Hotels Table */}
           {activeTab === 'hotels' && (
             <motion.div key="hotels" initial="hidden" animate="visible" exit="hidden" variants={fadeUp}>
               <div className="admin-table-container">
@@ -236,7 +228,6 @@ const AdminDashboard = () => {
             </motion.div>
           )}
 
-          {/* Users Table */}
           {activeTab === 'users' && (
             <motion.div key="users" initial="hidden" animate="visible" exit="hidden" variants={fadeUp}>
               <div className="admin-table-container">
@@ -264,7 +255,6 @@ const AdminDashboard = () => {
             </motion.div>
           )}
 
-          {/* Bookings Table */}
           {activeTab === 'bookings' && (
             <motion.div key="bookings" initial="hidden" animate="visible" exit="hidden" variants={fadeUp}>
               <div className="admin-table-container">

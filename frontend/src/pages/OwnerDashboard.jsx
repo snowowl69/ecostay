@@ -6,14 +6,14 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { hotelsAPI, roomsAPI, bookingsAPI } from '../services/api';
+import { hotelsAPI, roomsAPI, bookingsAPI, uploadAPI } from '../services/api';
 import toast from 'react-hot-toast';
 
 const defaultHotel = {
   name: '', description: '', category: 'boutique',
   address: { street: '', city: '', state: '', country: 'India', zipCode: '' },
   contactPhone: '', contactEmail: '', website: '',
-  amenities: [],
+  amenities: [], images: [],
   sustainability: {
     solarPowered: false, rainwaterHarvesting: false, organicFood: false,
     wasteRecycling: false, electricVehicleCharging: false, carbonOffset: false,
@@ -24,7 +24,7 @@ const defaultHotel = {
 const defaultRoom = {
   name: '', type: 'double', description: '', price: 100,
   capacity: { adults: 2, children: 1 }, totalUnits: 1, floorArea: 30,
-  amenities: [], ecoFeatures: []
+  amenities: [], images: [], ecoFeatures: []
 };
 
 const OwnerDashboard = () => {
@@ -36,7 +36,6 @@ const OwnerDashboard = () => {
   const [rooms, setRooms] = useState([]);
   const [hotelBookings, setHotelBookings] = useState([]);
 
-  // Modals
   const [showHotelForm, setShowHotelForm] = useState(false);
   const [showRoomForm, setShowRoomForm] = useState(false);
   const [editingHotel, setEditingHotel] = useState(null);
@@ -44,6 +43,11 @@ const OwnerDashboard = () => {
   const [hotelForm, setHotelForm] = useState(defaultHotel);
   const [roomForm, setRoomForm] = useState(defaultRoom);
   const [saving, setSaving] = useState(false);
+  const [hotelImageFiles, setHotelImageFiles] = useState([]);
+  const [hotelImagePreviews, setHotelImagePreviews] = useState([]);
+  const [roomImageFiles, setRoomImageFiles] = useState([]);
+  const [roomImagePreviews, setRoomImagePreviews] = useState([]);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => { loadHotels(); }, []);
 
@@ -75,16 +79,17 @@ const OwnerDashboard = () => {
     } catch (err) { console.error(err); }
   };
 
-  // Hotel CRUD
-  const openAddHotel = () => { setEditingHotel(null); setHotelForm(defaultHotel); setShowHotelForm(true); };
+  const openAddHotel = () => { setEditingHotel(null); setHotelForm(defaultHotel); setHotelImageFiles([]); setHotelImagePreviews([]); setShowHotelForm(true); };
   const openEditHotel = (hotel) => {
     setEditingHotel(hotel);
     setHotelForm({
       name: hotel.name, description: hotel.description, category: hotel.category,
       address: { ...hotel.address }, contactPhone: hotel.contactPhone || '', contactEmail: hotel.contactEmail || '', website: hotel.website || '',
-      amenities: hotel.amenities || [],
+      amenities: hotel.amenities || [], images: hotel.images || [],
       sustainability: { ...hotel.sustainability }
     });
+    setHotelImageFiles([]);
+    setHotelImagePreviews(hotel.images || []);
     setShowHotelForm(true);
   };
 
@@ -92,16 +97,24 @@ const OwnerDashboard = () => {
     e.preventDefault();
     setSaving(true);
     try {
+      let imageUrls = hotelForm.images || [];
+      if (hotelImageFiles.length > 0) {
+        setUploading(true);
+        const { data } = await uploadAPI.uploadImages(hotelImageFiles);
+        imageUrls = [...imageUrls, ...data.urls];
+        setUploading(false);
+      }
+      const payload = { ...hotelForm, images: imageUrls };
       if (editingHotel) {
-        await hotelsAPI.update(editingHotel._id, hotelForm);
+        await hotelsAPI.update(editingHotel._id, payload);
         toast.success('Hotel updated!');
       } else {
-        await hotelsAPI.create(hotelForm);
+        await hotelsAPI.create(payload);
         toast.success('Hotel created! It will be visible after admin verification.');
       }
       setShowHotelForm(false);
       loadHotels();
-    } catch (err) { toast.error(err.response?.data?.message || 'Failed to save'); }
+    } catch (err) { toast.error(err.response?.data?.message || 'Failed to save'); setUploading(false); }
     finally { setSaving(false); }
   };
 
@@ -115,15 +128,18 @@ const OwnerDashboard = () => {
     } catch (err) { toast.error('Failed to delete hotel'); }
   };
 
-  // Room CRUD
-  const openAddRoom = () => { setEditingRoom(null); setRoomForm(defaultRoom); setShowRoomForm(true); };
+  const openAddRoom = () => { setEditingRoom(null); setRoomForm(defaultRoom); setRoomImageFiles([]); setRoomImagePreviews([]); setShowRoomForm(true); };
   const openEditRoom = (room) => {
     setEditingRoom(room);
+    const eco = room.ecoFeatures;
+    const ecoArr = Array.isArray(eco) ? eco : (eco && typeof eco === 'object' ? Object.keys(eco).filter(k => eco[k]) : []);
     setRoomForm({
       name: room.name, type: room.type, description: room.description, price: room.price?.base ?? room.price,
       capacity: room.capacity || { adults: 2, children: 1 }, totalUnits: room.totalUnits, floorArea: room.floorArea,
-      amenities: room.amenities || [], ecoFeatures: room.ecoFeatures || []
+      amenities: room.amenities || [], images: room.images || [], ecoFeatures: ecoArr
     });
+    setRoomImageFiles([]);
+    setRoomImagePreviews(room.images || []);
     setShowRoomForm(true);
   };
 
@@ -131,16 +147,28 @@ const OwnerDashboard = () => {
     e.preventDefault();
     setSaving(true);
     try {
+      let imageUrls = roomForm.images || [];
+      if (roomImageFiles.length > 0) {
+        setUploading(true);
+        const { data } = await uploadAPI.uploadImages(roomImageFiles);
+        imageUrls = [...imageUrls, ...data.urls];
+        setUploading(false);
+      }
+      const payload = {
+        ...roomForm,
+        images: imageUrls,
+        price: { base: Number(roomForm.price), currency: 'INR' }
+      };
       if (editingRoom) {
-        await roomsAPI.update(editingRoom._id, roomForm);
+        await roomsAPI.update(editingRoom._id, payload);
         toast.success('Room updated!');
       } else {
-        await roomsAPI.create({ ...roomForm, hotel: selectedHotel._id });
+        await roomsAPI.create({ ...payload, hotel: selectedHotel._id });
         toast.success('Room added!');
       }
       setShowRoomForm(false);
       loadRooms();
-    } catch (err) { toast.error(err.response?.data?.message || 'Failed to save'); }
+    } catch (err) { toast.error(err.response?.data?.message || 'Failed to save'); setUploading(false); }
     finally { setSaving(false); }
   };
 
@@ -165,6 +193,66 @@ const OwnerDashboard = () => {
       ...prev,
       sustainability: { ...prev.sustainability, [key]: !prev.sustainability[key] }
     }));
+  };
+
+  const handleHotelImageSelect = (e) => {
+    const files = Array.from(e.target.files);
+    if (hotelImagePreviews.length + files.length > 6) {
+      toast.error('Maximum 6 images allowed');
+      return;
+    }
+    setHotelImageFiles(prev => [...prev, ...files]);
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (ev) => setHotelImagePreviews(prev => [...prev, ev.target.result]);
+      reader.readAsDataURL(file);
+    });
+    e.target.value = '';
+  };
+
+  const removeHotelImage = (index) => {
+    const existingCount = (hotelForm.images || []).length;
+    if (index < existingCount) {
+      setHotelForm(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== index) }));
+      setHotelImagePreviews(prev => prev.filter((_, i) => i !== index));
+    } else {
+      const fileIndex = index - existingCount;
+      setHotelImageFiles(prev => prev.filter((_, i) => i !== fileIndex));
+      setHotelImagePreviews(prev => prev.filter((_, i) => i !== index));
+    }
+  };
+
+  const handleRoomImageSelect = (e) => {
+    const files = Array.from(e.target.files);
+    if (roomImagePreviews.length + files.length > 6) {
+      toast.error('Maximum 6 images allowed');
+      return;
+    }
+    setRoomImageFiles(prev => [...prev, ...files]);
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (ev) => setRoomImagePreviews(prev => [...prev, ev.target.result]);
+      reader.readAsDataURL(file);
+    });
+    e.target.value = '';
+  };
+
+  const removeRoomImage = (index) => {
+    const existingCount = (roomForm.images || []).length;
+    if (index < existingCount) {
+      setRoomForm(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== index) }));
+      setRoomImagePreviews(prev => prev.filter((_, i) => i !== index));
+    } else {
+      const fileIndex = index - existingCount;
+      setRoomImageFiles(prev => prev.filter((_, i) => i !== fileIndex));
+      setRoomImagePreviews(prev => prev.filter((_, i) => i !== index));
+    }
+  };
+
+  const getImageSrc = (img) => {
+    if (img.startsWith('data:') || img.startsWith('http')) return img;
+    const base = import.meta.env.VITE_API_URL?.replace('/api', '') || '';
+    return `${base}${img}`;
   };
 
   const allAmenities = ['wifi', 'parking', 'pool', 'restaurant', 'gym', 'spa', 'room-service', 'bar', 'laundry', 'security', 'concierge'];
@@ -200,7 +288,6 @@ const OwnerDashboard = () => {
           </motion.div>
         ) : (
           <>
-            {/* Hotel Selector */}
             <div className="dashboard-hotel-selector">
               {hotels.map(h => (
                 <button key={h._id}
@@ -216,7 +303,6 @@ const OwnerDashboard = () => {
 
             {selectedHotel && (
               <>
-                {/* Stats */}
                 <div className="dashboard-stats">
                   <motion.div className="stat-card" variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }}>
                     <div className="stat-icon" style={{ background: 'var(--gradient-primary)' }}><Bed size={24} /></div>
@@ -236,14 +322,12 @@ const OwnerDashboard = () => {
                   </motion.div>
                 </div>
 
-                {/* Tabs */}
                 <div className="dashboard-tabs">
                   <button className={`dashboard-tab ${activeTab === 'hotels' ? 'active' : ''}`} onClick={() => setActiveTab('hotels')}>Hotel Info</button>
                   <button className={`dashboard-tab ${activeTab === 'rooms' ? 'active' : ''}`} onClick={() => setActiveTab('rooms')}>Rooms ({rooms.length})</button>
                   <button className={`dashboard-tab ${activeTab === 'bookings' ? 'active' : ''}`} onClick={() => setActiveTab('bookings')}>Bookings ({hotelBookings.length})</button>
                 </div>
 
-                {/* Tab Content */}
                 <AnimatePresence mode="wait">
                   {activeTab === 'hotels' && (
                     <motion.div key="hotels-tab" initial="hidden" animate="visible" exit="hidden" variants={fadeUp}>
@@ -340,7 +424,6 @@ const OwnerDashboard = () => {
         )}
       </div>
 
-      {/* Hotel Form Modal */}
       <AnimatePresence>
         {showHotelForm && (
           <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowHotelForm(false)}>
@@ -359,6 +442,24 @@ const OwnerDashboard = () => {
                   <div className="form-group">
                     <label className="form-label">Description *</label>
                     <textarea className="form-input form-textarea" rows={3} value={hotelForm.description} onChange={e => setHotelForm({ ...hotelForm, description: e.target.value })} required />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label"><Image size={14} style={{ marginRight: '6px' }} />Hotel Images (max 6)</label>
+                    <div className="image-upload-area">
+                      {hotelImagePreviews.map((img, i) => (
+                        <div key={i} className="image-preview-item">
+                          <img src={getImageSrc(img)} alt={`Hotel ${i + 1}`} />
+                          <button type="button" className="image-remove-btn" onClick={() => removeHotelImage(i)}><X size={14} /></button>
+                        </div>
+                      ))}
+                      {hotelImagePreviews.length < 6 && (
+                        <label className="image-upload-btn">
+                          <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple onChange={handleHotelImageSelect} style={{ display: 'none' }} />
+                          <Plus size={24} />
+                          <span>Add Photo</span>
+                        </label>
+                      )}
+                    </div>
                   </div>
                   <div className="form-group">
                     <label className="form-label">Category</label>
@@ -404,8 +505,8 @@ const OwnerDashboard = () => {
                       ))}
                     </div>
                   </div>
-                  <button type="submit" className="btn btn-primary btn-block" disabled={saving}>
-                    <Save size={16} /> {saving ? 'Saving...' : editingHotel ? 'Update Hotel' : 'Create Hotel'}
+                  <button type="submit" className="btn btn-primary btn-block" disabled={saving || uploading}>
+                    <Save size={16} /> {uploading ? 'Uploading images...' : saving ? 'Saving...' : editingHotel ? 'Update Hotel' : 'Create Hotel'}
                   </button>
                 </form>
               </div>
@@ -414,7 +515,6 @@ const OwnerDashboard = () => {
         )}
       </AnimatePresence>
 
-      {/* Room Form Modal */}
       <AnimatePresence>
         {showRoomForm && (
           <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowRoomForm(false)}>
@@ -449,19 +549,37 @@ const OwnerDashboard = () => {
                   <div className="form-group"><label className="form-label">Description</label>
                     <textarea className="form-input form-textarea" rows={2} value={roomForm.description} onChange={e => setRoomForm({ ...roomForm, description: e.target.value })} /></div>
                   <div className="form-group">
+                    <label className="form-label"><Image size={14} style={{ marginRight: '6px' }} />Room Images (max 6)</label>
+                    <div className="image-upload-area">
+                      {roomImagePreviews.map((img, i) => (
+                        <div key={i} className="image-preview-item">
+                          <img src={getImageSrc(img)} alt={`Room ${i + 1}`} />
+                          <button type="button" className="image-remove-btn" onClick={() => removeRoomImage(i)}><X size={14} /></button>
+                        </div>
+                      ))}
+                      {roomImagePreviews.length < 6 && (
+                        <label className="image-upload-btn">
+                          <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple onChange={handleRoomImageSelect} style={{ display: 'none' }} />
+                          <Plus size={24} />
+                          <span>Add Photo</span>
+                        </label>
+                      )}
+                    </div>
+                  </div>
+                  <div className="form-group">
                     <label className="form-label">Eco Features</label>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                       {ecoFeatures.map(f => (
                         <button type="button" key={f}
-                          className={`filter-chip ${roomForm.ecoFeatures.includes(f) ? 'active' : ''}`}
-                          onClick={() => setRoomForm(prev => ({ ...prev, ecoFeatures: prev.ecoFeatures.includes(f) ? prev.ecoFeatures.filter(x => x !== f) : [...prev.ecoFeatures, f] }))}>
+                          className={`filter-chip ${(Array.isArray(roomForm.ecoFeatures) ? roomForm.ecoFeatures : []).includes(f) ? 'active' : ''}`}
+                          onClick={() => setRoomForm(prev => { const arr = Array.isArray(prev.ecoFeatures) ? prev.ecoFeatures : []; return { ...prev, ecoFeatures: arr.includes(f) ? arr.filter(x => x !== f) : [...arr, f] }; })}>
                           {f}
                         </button>
                       ))}
                     </div>
                   </div>
-                  <button type="submit" className="btn btn-primary btn-block" disabled={saving}>
-                    <Save size={16} /> {saving ? 'Saving...' : editingRoom ? 'Update Room' : 'Add Room'}
+                  <button type="submit" className="btn btn-primary btn-block" disabled={saving || uploading}>
+                    <Save size={16} /> {uploading ? 'Uploading images...' : saving ? 'Saving...' : editingRoom ? 'Update Room' : 'Add Room'}
                   </button>
                 </form>
               </div>

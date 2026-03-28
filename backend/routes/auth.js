@@ -10,7 +10,6 @@ const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 };
 
-// Register
 router.post('/register', [
   body('name').trim().notEmpty().withMessage('Name is required'),
   body('email').isEmail().withMessage('Valid email is required'),
@@ -57,7 +56,6 @@ router.post('/register', [
   }
 });
 
-// Login
 router.post('/login', [
   body('email').isEmail().withMessage('Valid email is required'),
   body('password').notEmpty().withMessage('Password is required')
@@ -99,7 +97,6 @@ router.post('/login', [
   }
 });
 
-// Get current user
 router.get('/me', protect, async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate('savedHotels');
@@ -118,7 +115,6 @@ router.get('/me', protect, async (req, res) => {
   }
 });
 
-// Update profile
 router.put('/profile', protect, [
   body('name').optional().trim().notEmpty(),
   body('phone').optional().trim()

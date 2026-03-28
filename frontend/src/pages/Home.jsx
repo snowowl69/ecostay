@@ -50,7 +50,6 @@ const Home = () => {
 
   return (
     <div>
-      {/* ===== HERO ===== */}
       <section className="hero">
         <div className="hero-bg-pattern" />
         <div className="hero-particles">
@@ -117,7 +116,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ===== FEATURES ===== */}
       <section className="features-section">
         <div className="section-header">
           <motion.div className="section-tag" initial="hidden" whileInView="visible" variants={fadeUp} viewport={{ once: true }}>
@@ -158,7 +156,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ===== FEATURED HOTELS ===== */}
       <section className="section" style={{ background: '#f8fafc' }}>
         <div className="container">
           <div className="section-header">
@@ -199,7 +196,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ===== HOW IT WORKS ===== */}
       <section className="how-it-works">
         <div className="section-header">
           <div className="section-tag"><Search size={14} /> Simple Process</div>
@@ -230,7 +226,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ===== SUSTAINABILITY ===== */}
       <section className="sustainability-section">
         <div className="sustainability-content">
           <motion.div className="sustainability-text" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
@@ -270,7 +265,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ===== TESTIMONIALS ===== */}
       <section className="testimonials-section">
         <div className="section-header">
           <div className="section-tag"><Heart size={14} /> Testimonials</div>
@@ -307,7 +301,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ===== CTA ===== */}
       <section className="cta-section">
         <div className="cta-content">
           <motion.h2 initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>

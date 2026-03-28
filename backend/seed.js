@@ -13,14 +13,12 @@ const seedDB = async () => {
     await mongoose.connect(process.env.MONGO_URI);
     console.log('Connected to MongoDB');
 
-    // Clear existing data
     await User.deleteMany({});
     await Hotel.deleteMany({});
     await Room.deleteMany({});
     await Booking.deleteMany({});
     console.log('Cleared existing data');
 
-    // Create users
     const admin = await User.create({
       name: 'Admin User',
       email: 'admin@ecostay.com',
@@ -66,7 +64,6 @@ const seedDB = async () => {
 
     console.log('Users created');
 
-    // Create hotels
     const hotel1 = await Hotel.create({
       name: 'The Green Haven Resort',
       description: 'Nestled in the lush valleys of Himachal Pradesh, The Green Haven Resort is a luxury eco-retreat that combines world-class comfort with deep environmental responsibility. Every aspect of our resort has been designed with sustainability in mind, from our solar-powered facilities to our organic farm-to-table restaurant serving authentic Himachali cuisine.',
@@ -275,7 +272,6 @@ const seedDB = async () => {
     hotel5.calculateSustainabilityScore();
     await hotel5.save();
 
-    // Unverified hotel (for admin dashboard demo)
     const hotel6 = await Hotel.create({
       name: 'Sunrise Valley Eco Farm',
       description: 'A working organic farm turned eco-accommodation in the hills of Coorg. Stay in converted heritage cottages, help with daily farm activities, and enjoy the freshest farm-to-table meals with authentic Kodava cuisine.',
@@ -308,10 +304,8 @@ const seedDB = async () => {
 
     console.log('Hotels created');
 
-    // Create rooms (prices in INR)
     const rooms = [];
 
-    // Hotel 1 rooms (Manali)
     rooms.push(await Room.create({
       hotel: hotel1._id, name: 'Evergreen Suite', type: 'suite',
       description: 'Spacious suite with panoramic Himalayan views, bamboo flooring, and a private balcony surrounded by nature.',
@@ -342,7 +336,6 @@ const seedDB = async () => {
       ecoFeatures: { recycledMaterials: true, ledLighting: true, lowFlowFixtures: true }
     }));
 
-    // Hotel 2 rooms (Ooty)
     rooms.push(await Room.create({
       hotel: hotel2._id, name: 'Bamboo Master Suite', type: 'suite',
       description: 'The crown jewel of our lodge, featuring handcrafted bamboo furniture and a private hot tub with mountain views.',
@@ -363,7 +356,6 @@ const seedDB = async () => {
       ecoFeatures: { bambooFurniture: true, organicLinens: true, ledLighting: true }
     }));
 
-    // Hotel 3 rooms (Goa)
     rooms.push(await Room.create({
       hotel: hotel3._id, name: 'Ocean View Penthouse', type: 'penthouse',
       description: 'Exclusive top-floor penthouse with 360-degree ocean views and private terrace overlooking the Arabian Sea.',
@@ -384,7 +376,6 @@ const seedDB = async () => {
       ecoFeatures: { organicLinens: true, lowFlowFixtures: true, ledLighting: true }
     }));
 
-    // Hotel 4 rooms (Wayanad)
     rooms.push(await Room.create({
       hotel: hotel4._id, name: 'Canopy Treehouse', type: 'treehouse',
       description: 'Sleep among the ancient trees of Wayanad in this handcrafted luxury treehouse.',
@@ -395,7 +386,6 @@ const seedDB = async () => {
       ecoFeatures: { bambooFurniture: true, organicLinens: true, lowFlowFixtures: true, ledLighting: true, recycledMaterials: true }
     }));
 
-    // Hotel 5 rooms (Bengaluru)
     rooms.push(await Room.create({
       hotel: hotel5._id, name: 'Urban Green Suite', type: 'suite',
       description: 'Modern city suite with living green wall, smart climate control, and designer eco-furniture.',
@@ -418,13 +408,11 @@ const seedDB = async () => {
 
     console.log('Rooms created');
 
-    // Update hotel totalRooms
     for (const hotel of [hotel1, hotel2, hotel3, hotel4, hotel5]) {
       hotel.totalRooms = await Room.countDocuments({ hotel: hotel._id });
       await hotel.save();
     }
 
-    // Create sample bookings (prices in INR)
     const futureDate1 = new Date('2026-03-15');
     const futureDate2 = new Date('2026-03-20');
     const futureDate3 = new Date('2026-04-01');

@@ -7,7 +7,6 @@ const api = axios.create({
   }
 });
 
-// Request interceptor
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('ecostay_token');
@@ -19,7 +18,6 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -33,7 +31,6 @@ api.interceptors.response.use(
   }
 );
 
-// Auth API
 export const authAPI = {
   login: (data) => api.post('/auth/login', data),
   register: (data) => api.post('/auth/register', data),
@@ -41,7 +38,6 @@ export const authAPI = {
   updateProfile: (data) => api.put('/auth/profile', data)
 };
 
-// Hotels API
 export const hotelsAPI = {
   getAll: (params) => api.get('/hotels', { params }),
   getById: (id) => api.get(`/hotels/${id}`),
@@ -52,7 +48,6 @@ export const hotelsAPI = {
   getMyHotels: () => api.get('/hotels/owner/my-hotels')
 };
 
-// Rooms API
 export const roomsAPI = {
   getByHotel: (hotelId, params) => api.get(`/rooms/hotel/${hotelId}`, { params }),
   getById: (id) => api.get(`/rooms/${id}`),
@@ -62,7 +57,6 @@ export const roomsAPI = {
   checkAvailability: (data) => api.post('/rooms/check-availability', data)
 };
 
-// Bookings API
 export const bookingsAPI = {
   create: (data) => api.post('/bookings', data),
   getMyBookings: (params) => api.get('/bookings/my-bookings', { params }),
@@ -73,7 +67,6 @@ export const bookingsAPI = {
   getByTicket: (ticket) => api.get(`/bookings/ticket/${ticket}`)
 };
 
-// Admin API
 export const adminAPI = {
   getStats: () => api.get('/admin/stats'),
   getUsers: (params) => api.get('/admin/users', { params }),
@@ -82,6 +75,16 @@ export const adminAPI = {
   verifyHotel: (id) => api.put(`/admin/hotels/${id}/verify`),
   unverifyHotel: (id) => api.put(`/admin/hotels/${id}/unverify`),
   deleteUser: (id) => api.delete(`/admin/users/${id}`)
+};
+
+export const uploadAPI = {
+  uploadImages: (files) => {
+    const formData = new FormData();
+    files.forEach(file => formData.append('images', file));
+    return api.post('/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+  }
 };
 
 export default api;

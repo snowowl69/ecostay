@@ -6,7 +6,6 @@ const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Get all verified hotels (public)
 router.get('/', async (req, res) => {
   try {
     const {
@@ -60,7 +59,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Get hotels by owner (must be BEFORE /:id to avoid route conflict)
 router.get('/owner/my-hotels', protect, authorize('owner'), async (req, res) => {
   try {
     const hotels = await Hotel.find({ owner: req.user._id });
@@ -70,7 +68,6 @@ router.get('/owner/my-hotels', protect, authorize('owner'), async (req, res) => 
   }
 });
 
-// Get single hotel (public)
 router.get('/:id', async (req, res) => {
   try {
     const hotel = await Hotel.findById(req.params.id)
@@ -89,7 +86,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Create hotel (owner only)
 router.post('/', protect, authorize('owner', 'admin'), [
   body('name').trim().notEmpty().withMessage('Hotel name is required'),
   body('description').trim().notEmpty().withMessage('Description is required'),
@@ -116,7 +112,6 @@ router.post('/', protect, authorize('owner', 'admin'), [
   }
 });
 
-// Update hotel (owner only)
 router.put('/:id', protect, authorize('owner', 'admin'), async (req, res) => {
   try {
     let hotel = await Hotel.findById(req.params.id);
@@ -142,7 +137,6 @@ router.put('/:id', protect, authorize('owner', 'admin'), async (req, res) => {
   }
 });
 
-// Delete hotel (owner only)
 router.delete('/:id', protect, authorize('owner', 'admin'), async (req, res) => {
   try {
     const hotel = await Hotel.findById(req.params.id);
@@ -163,7 +157,6 @@ router.delete('/:id', protect, authorize('owner', 'admin'), async (req, res) => 
   }
 });
 
-// Add review
 router.post('/:id/reviews', protect, authorize('customer'), [
   body('rating').isInt({ min: 1, max: 5 }).withMessage('Rating must be between 1 and 5'),
   body('comment').optional().trim().isLength({ max: 500 })

@@ -7,10 +7,8 @@ const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
-// All admin routes require admin role
 router.use(protect, authorize('admin'));
 
-// Dashboard stats
 router.get('/stats', async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();
@@ -32,7 +30,6 @@ router.get('/stats', async (req, res) => {
 
     const certifiedHotels = await Hotel.countDocuments({ 'sustainability.certified': true });
 
-    // Monthly bookings (last 6 months)
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
@@ -66,7 +63,6 @@ router.get('/stats', async (req, res) => {
   }
 });
 
-// Get all users
 router.get('/users', async (req, res) => {
   try {
     const { role, page = 1, limit = 20 } = req.query;
@@ -95,7 +91,6 @@ router.get('/users', async (req, res) => {
   }
 });
 
-// Get all hotels (including unverified)
 router.get('/hotels', async (req, res) => {
   try {
     const { verified, page = 1, limit = 20 } = req.query;
@@ -125,7 +120,6 @@ router.get('/hotels', async (req, res) => {
   }
 });
 
-// Verify hotel
 router.put('/hotels/:id/verify', async (req, res) => {
   try {
     const hotel = await Hotel.findByIdAndUpdate(
@@ -144,7 +138,6 @@ router.put('/hotels/:id/verify', async (req, res) => {
   }
 });
 
-// Unverify hotel
 router.put('/hotels/:id/unverify', async (req, res) => {
   try {
     const hotel = await Hotel.findByIdAndUpdate(
@@ -163,7 +156,6 @@ router.put('/hotels/:id/unverify', async (req, res) => {
   }
 });
 
-// Get all bookings
 router.get('/bookings', async (req, res) => {
   try {
     const { status, page = 1, limit = 20 } = req.query;
@@ -195,7 +187,6 @@ router.get('/bookings', async (req, res) => {
   }
 });
 
-// Delete user
 router.delete('/users/:id', async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);

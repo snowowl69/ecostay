@@ -88,7 +88,6 @@ const Hotels = () => {
           <p>Discover {pagination.total || 'amazing'} verified sustainable stays around the world</p>
         </motion.div>
 
-        {/* Search & Sort */}
         <div className="search-filter-bar">
           <form onSubmit={handleSearch} style={{ flex: 1, display: 'flex', gap: '12px' }}>
             <input
@@ -117,7 +116,6 @@ const Hotels = () => {
           </select>
         </div>
 
-        {/* Category Filters */}
         <div className="hotels-filters">
           {categories.map((cat) => (
             <button
@@ -130,7 +128,6 @@ const Hotels = () => {
           ))}
         </div>
 
-        {/* Hotels Grid */}
         {loading ? (
           <LoadingSpinner text="Finding the best eco hotels..." />
         ) : hotels.length === 0 ? (
@@ -158,7 +155,6 @@ const Hotels = () => {
               ))}
             </div>
 
-            {/* Pagination */}
             {pagination.pages > 1 && (
               <div className="pagination">
                 {Array.from({ length: pagination.pages }, (_, i) => i + 1).map((page) => (

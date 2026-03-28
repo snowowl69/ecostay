@@ -74,7 +74,6 @@ const CustomerDashboard = () => {
           </div>
         </motion.div>
 
-        {/* Stats Row */}
         <div className="dashboard-stats">
           <motion.div className="stat-card" variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }}>
             <div className="stat-icon" style={{ background: 'var(--gradient-primary)' }}>
@@ -114,7 +113,6 @@ const CustomerDashboard = () => {
           </motion.div>
         </div>
 
-        {/* Tab navigation */}
         <div className="dashboard-tabs">
           {tabs.map(tab => (
             <button
@@ -127,7 +125,6 @@ const CustomerDashboard = () => {
           ))}
         </div>
 
-        {/* Bookings list */}
         {loading ? (
           <LoadingSpinner text="Loading your bookings..." />
         ) : currentBookings.length === 0 ? (
