@@ -69,6 +69,7 @@ EcoStay is a full-stack MERN web application designed for sustainable hotel and 
 │   ├── seed.js                # Demo data seeder
 │   └── server.js              # Express server entry
 │
+│
 ├── frontend/
 │   ├── public/
 │   ├── src/

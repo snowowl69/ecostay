@@ -101,14 +101,14 @@ const HotelDetail = () => {
       const res = await bookingsAPI.create({
         hotel: hotel._id,
         room: selectedRoom._id,
-        checkInDate: bookingData.checkIn,
-        checkOutDate: bookingData.checkOut,
+        checkIn: bookingData.checkIn,
+        checkOut: bookingData.checkOut,
         guests: { adults: bookingData.guests, children: 0 },
-        units: bookingData.units,
+        unitsBooked: bookingData.units,
         specialRequests: bookingData.specialRequests
       });
       toast.success('Booking confirmed! 🎉');
-      navigate(`/booking-confirmation/${res.data.booking._id}`);
+      navigate(`/booking-confirmation/${res.data._id}`);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Booking failed');
     } finally {
